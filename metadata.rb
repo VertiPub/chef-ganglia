@@ -1,3 +1,4 @@
+name             "ganglia"
 maintainer       "Heavy Water Software Inc."
 maintainer_email "darrin@heavywater.ca"
 license          "Apache 2.0"
@@ -8,7 +9,9 @@ version          "0.1.1"
 %w{ debian ubuntu redhat centos fedora }.each do |os|
   supports os
 end
-
+%w{apache2 build-essential yum}.each do |cb|
+  depends cb
+end
 recommends "graphite"
 suggests "iptables"
 

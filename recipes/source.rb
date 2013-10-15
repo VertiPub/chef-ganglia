@@ -1,3 +1,9 @@
+include_recipe 'build-essential'
+
+if node['platform_family'] == "rhel"
+  include_recipe 'yum::epel'
+end
+
 if platform?( "redhat", "centos", "fedora" )
   package "apr-devel"
   package "libconfuse-devel"
@@ -36,8 +42,12 @@ execute "install ganglia" do
   cwd src_path
 end
 
+link "/usr/sbin/gmond" do
+  to "/usr/local/sbin/gmond"
+end
+
 link "/usr/lib/ganglia" do
-  to "/usr/lib64/ganglia"
+  to "/usr/local/lib64/ganglia"
   only_if do
     node[:kernel][:machine] == "x86_64" and
       platform?( "redhat", "centos", "fedora" )

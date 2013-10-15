@@ -1,0 +1,78 @@
+---
+driver_plugin: vagrant
+driver_config:
+  require_chef_omnibus: true
+
+platforms:
+- name: ubuntu-12.04
+  driver_config:
+    box: opscode-ubuntu-12.04
+    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
+- name: ubuntu-10.04
+  driver_config:
+    box: opscode-ubuntu-10.04
+    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-10.04_provisionerless.box
+- name: centos-6.4
+  driver_config:
+    box: opscode-centos-6.4
+    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_centos-6.4_provisionerless.box
+- name: centos-5.9
+  driver_config:
+    box: opscode-centos-5.9
+    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_centos-5.9_provisionerless.box
+
+suites:
+- name: default
+  run_list: ["recipe[chef-solo-search]", "recipe[ganglia]", "recipe[minitest-handler]"]
+  attributes: {}
+
+- name: gmetad
+  run_list: ["recipe[chef-solo-search]", "recipe[ganglia::gmetad]", "recipe[minitest-handler]"]
+  data_bags_path: "test/databag"
+  attributes: { "ganglia" :{
+                "grid_name": "test-grid",
+                "clusters":[{ "name": "local-0", "collector": "localhost" }]}
+
+}
+
+- name: gmetad_unicast
+  run_list: ["recipe[chef-solo-search]", "recipe[ganglia::gmetad]", "recipe[minitest-handler]"]
+  data_bags_path: "test/databag"
+  attributes: { "ganglia" :{
+ 		"unicast":true,
+ 		"grid_name": "test-grid",
+		"clusters":[{ "name": "local-0", "collector": "localhost" }]}
+
+}
+
+- name: web
+  run_list: ["recipe[chef-solo-search]", "recipe[ganglia::web]", "recipe[minitest-handler]"]
+  attributes: { "ganglia" :{
+		"unicate" :true,
+ 		"grid_name": "test-grid",
+		"server_addresses": [ "localhost" ],
+		"clusters":[{ "name": "local-0", "collector": "localhost" }]}
+
+}
+
+- name: graphite 
+  run_list: ["recipe[chef-solo-search]", "recipe[ganglia::graphite]", "recipe[minitest-handler]"]
+  attributes: {}
+
+- name: server
+  run_list: ["recipe[chef-solo-search]", "recipe[ganglia]", "recipe[ganglia::gmetad]", "recipe[ganglia::web]", "recipe[ganglia::graphite]", "recipe[minitest-handler]"]
+  attributes: { "ganglia" :{
+                "grid_name": "test-grid",
+                "clusters":[{ "name": "local-0", "collector": "localhost" }]}
+
+}
+
+- name: server_unicast
+  run_list: ["recipe[chef-solo-search]", "recipe[ganglia]", "recipe[ganglia::gmetad]", "recipe[ganglia::web]", "recipe[ganglia::graphite]", "recipe[minitest-handler]"]
+  attributes: { "ganglia" :{
+ 		"grid_name": "test-grid",
+		"unicast" : true,
+		"clusters":[{ "name": "local-0", "collector": "localhost" }]}
+
+}
+
